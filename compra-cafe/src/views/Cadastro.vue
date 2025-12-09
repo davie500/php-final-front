@@ -1,3 +1,32 @@
+<script>
+    import { api } from '@/services/api';
+
+    export default {
+        name: 'Cadastro',
+        data() {
+            return {
+                nome: '',
+                email: '',
+                senha: ''
+            };
+        },
+        methods: {
+            async cadastrar() {
+                try {
+                    const response = await api.post('/usuarios', {
+                        nome: this.nome,
+                        email: this.email,
+                        senha: this.senha
+                    });
+                    console.log('Usuário cadastrado com sucesso:', response.data);
+                } catch (error) {
+                    console.error('Erro ao cadastrar usuário:', error);
+                }
+            }
+        }
+    };
+</script>
+
 <template>
     <v-container>
         <h1>Cadastro</h1>
