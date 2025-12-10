@@ -1,24 +1,3 @@
-<script>
-    import { api } from '@/services/api';
-
-    export default {
-        name: 'Dashboard',
-        data() {
-            return {
-                coffees: []
-            };
-        },
-        async created() {
-            try {
-                const response = await api.get('/coffees');
-                this.coffees = response.data;
-            } catch (error) {
-                console.error('Erro ao buscar cafés:', error);
-            }
-        }
-    };
-</script>
-
 <template>
     <v-container class="pa-6">
         <v-sheet elevation="2" rounded class="pa-8 mb-6" color="deep-purple lighten-5">

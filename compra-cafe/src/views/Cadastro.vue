@@ -1,5 +1,5 @@
 <script>
-    import { api } from '@/services/api';
+    import { api } from '@/Controller/api';
 
     export default {
         name: 'Cadastro',

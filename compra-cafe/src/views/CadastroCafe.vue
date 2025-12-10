@@ -1,3 +1,34 @@
+<!-- <script>
+    import { CafeService } from '@/services/Service';
+
+    export default {
+        name: 'CadastroCafe',
+        data() {
+            return {
+                nomeCafe: '',
+                descricao: '',
+                preco: null,
+                opcaoSelecionada: ''
+            };
+        },
+        methods: {
+            async cadastrarCafe() {
+                try {
+                    const response = await CafeService.post('/cafes', {
+                        nome: this.nomeCafe,
+                        descricao: this.descricao,
+                        preco: this.preco,
+                        opcao: this.opcaoSelecionada
+                    });
+                    console.log('Café cadastrado com sucesso:', response.data);
+                } catch (error) {
+                    console.error('Erro ao cadastrar café:', error);
+                }
+            }
+        }
+    };
+</script> -->
+
 <template>
     <v-container>
         <h1>Cadastro de Cafés</h1>
