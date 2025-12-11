@@ -4,8 +4,8 @@
             <v-row>
                 <v-col cols="12" md="6">
                     <h1 class="display-1">Bem-vindo à Cafeteria dos Eichelberger</h1>
-                    <p class="subtitle-1">Explore nossos cafés especiais, assine nosso clube e faça seu pedido hoje mesmo.</p>
-                    <v-btn to="/cadastro-cafe" color="primary" class="mt-4" large>Ver Cafés</v-btn>
+                    <p class="subtitle-1">Explore nossos cafés especiais e faça seu pedido hoje mesmo.</p>
+                    <v-btn to="/cadastro-cafe" color="primary" class="mt-4" large>Ver Catálogo</v-btn>
                 </v-col>
 
                 <v-col cols="12" md="6">
@@ -14,30 +14,62 @@
             </v-row>
         </v-sheet>
 
-        <h2 class="headline mb-4">Destaques</h2>
-        <v-row dense>
-            <v-col cols="12" md="4" v-for="coffee in coffees" :key="coffee.id">
-                <v-card elevation="2" class="h-100">
-                    <v-img :src="coffee.image" height="180px" />
-                    <v-card-title>{{ coffee.name }}</v-card-title>
-                    <v-card-text class="text--secondary">{{ coffee.desc }}</v-card-text>
-                    <v-card-actions>
-                        <v-btn text color="primary" :to="coffee.link">Detalhes</v-btn>
-                        <v-spacer />
-                        <v-btn color="primary" :to="'/cadastro-cafe'">Pedir</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-col>
-        </v-row>
+        <div v-if="loading" class="text-center pa-8">
+            <v-progress-circular indeterminate color="primary" />
+            <p class="mt-4">Carregando cafés...</p>
+        </div>
+
+        <div v-else-if="cafes.length > 0">
+            <h2 class="headline mb-4">Nossos Cafés</h2>
+            <v-row dense>
+                <v-col cols="12" md="4" v-for="cafe in cafes" :key="cafe.id">
+                    <v-card elevation="2" class="h-100">
+                        <v-img :src="cafe.image || placeholder" height="180px" />
+                        <v-card-title>{{ cafe.name || cafe.nome }}</v-card-title>
+                        <v-card-text class="text--secondary">{{ cafe.desc || cafe.descricao || cafe.description }}</v-card-text>
+                        <v-card-text v-if="cafe.price || cafe.preco" class="font-weight-bold">R$ {{ formatPrice(cafe.price || cafe.preco) }}</v-card-text>
+                        <v-card-actions>
+                            <v-btn text color="primary" @click="router.push(`/cafe/${cafe.id}`)">Detalhes</v-btn>
+                            <v-spacer />
+                            <v-btn color="primary">Adicionar</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </div>
+
+        <div v-else class="text-center pa-8">
+            <p class="text-h6">Nenhum café encontrado. Verifique o backend.</p>
+        </div>
     </v-container>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { CafeService } from '@/Controller/api'
 
-const coffees = ref([
-    { id: 1, name: 'Espresso Clássico', desc: 'Intenso e encorpado — perfeito para começar o dia.', image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=800&auto=format&fit=crop', link: '/cadastro-cafe' },
-    { id: 2, name: 'Cappuccino Cremoso', desc: 'Espuma aveludada com cacau polvilhado.', image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=800&auto=format&fit=crop', link: '/cadastro-cafe' },
-    { id: 3, name: 'Latte Aromático', desc: 'Suave com notas de baunilha e caramelo.', image: 'https://images.unsplash.com/photo-1524182576063-7a0d3b8e7d5a?q=80&w=800&auto=format&fit=crop', link: '/cadastro-cafe' },
-])
+const router = useRouter()
+
+const cafes = ref<any[]>([])
+const loading = ref(false)
+const placeholder = 'https://via.placeholder.com/400x200?text=Café'
+
+onMounted(async () => {
+    loading.value = true
+    try {
+        const res = await CafeService.listar()
+        // backend pode retornar data (wrapper) ou um array direto
+        cafes.value = res.data?.data ?? res.data ?? []
+    } catch (err) {
+        console.error('Erro ao carregar cafés:', err)
+        cafes.value = []
+    } finally {
+        loading.value = false
+    }
+})
+
+function formatPrice(price: number) {
+    return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(price)
+}
 </script>
