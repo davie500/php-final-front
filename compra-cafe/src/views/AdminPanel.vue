@@ -7,6 +7,7 @@
         <v-btn :color="tab === 'compras' ? 'primary' : undefined" @click="select('compras')">Compras</v-btn>
         <v-btn :color="tab === 'usuarios' ? 'primary' : undefined" @click="select('usuarios')">Usuários</v-btn>
         <v-btn :color="tab === 'filas' ? 'primary' : undefined" @click="select('filas')">Filas</v-btn>
+        <v-btn :color="tab === 'cafes' ? 'primary' : undefined" @click="select('cafes')">Cafés</v-btn>
         <v-spacer />
         <v-btn text @click="refresh">Atualizar</v-btn>
       </v-col>
@@ -91,6 +92,31 @@
             </tbody>
           </v-simple-table>
         </div>
+
+        <div v-if="tab === 'cafes'">
+          <h3>Cafés</h3>
+          <v-simple-table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Preço</th>
+                <th>Quantidade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="cafe in cafes" :key="cafe.id">
+                <td>{{ cafe.id }}</td>
+                <td>{{ cafe.nome || cafe.name }}</td>
+                <td>{{ cafe.descricao || cafe.desc }}</td>
+                <td>R$ {{ cafe.preco || cafe.price }}</td>
+                <td>{{ cafe.quantidade || cafe.stock}}</td>
+              </tr>
+            </tbody>
+          </v-simple-table>
+          <div v-if="cafes.length === 0">Nenhum café encontrado.</div>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -98,12 +124,13 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { PedidoService, UsuarioService, api } from '../Controller/api'
+import { PedidoService, UsuarioService, CafeService, api } from '../Controller/api'
 
 const tab = ref('compras')
 const compras = ref<any[]>([])
 const usuarios = ref<any[]>([])
 const filas = ref<any[]>([])
+const cafes = ref<any[]>([])
 
 function select(t: string) {
   tab.value = t
@@ -140,10 +167,21 @@ async function loadFilas() {
   }
 }
 
+async function loadCafes() {
+  try {
+    const { data } = await CafeService.listar()
+    cafes.value = data?.data || data || []
+  } catch (e) {
+    console.error('Erro ao buscar cafés', e)
+    cafes.value = []
+  }
+}
+
 async function loadCurrent() {
   if (tab.value === 'compras') await loadCompras()
   if (tab.value === 'usuarios') await loadUsuarios()
   if (tab.value === 'filas') await loadFilas()
+  if (tab.value === 'cafes') await loadCafes()
 }
 
 onMounted(() => {

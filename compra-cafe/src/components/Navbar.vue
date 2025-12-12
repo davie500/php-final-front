@@ -4,6 +4,7 @@
     <v-spacer />
     <v-btn to="/" text>Dashboard</v-btn>
     <v-btn to="/cadastro-cafe" text>Cadastro de Cafés</v-btn>
+    <v-btn to="/admin" text>Painel Admin</v-btn>
 
     <!-- Mostrar Menu de Usuário (se autenticado) ou Botões de Cadastro/Login (se não) -->
     <template v-if="usuarioAutenticado && usuario">
