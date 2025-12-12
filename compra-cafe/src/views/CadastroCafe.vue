@@ -5,6 +5,8 @@ import { CafeService } from '../Controller/api'
 const nomeCafe = ref('')
 const descricao = ref('')
 const preco = ref<number | null>(null)
+const estoque = ref<number | null>(null)
+const imagem = ref('')
 const opcaoSelecionada = ref('')
 const loading = ref(false)
 
@@ -66,7 +68,7 @@ function resetar() {
             :items="opcoes"
             item-title="texto"
             item-value="valor"
-            label="Escolha uma opção"
+            label="Escolha a marca"
             required
           />
         </v-col>
@@ -75,12 +77,17 @@ function resetar() {
           <v-textarea v-model="descricao" label="Descrição" rows="3" required />
         </v-col>
 
-        <v-col cols="12" md="4">
+        <v-col cols="12">
           <v-text-field v-model.number="preco" label="Preço (R$)" type="number" required />
         </v-col>
 
+        <v-col cols="12">
+          <v-text-field v-model.number="estoque" label="Estoque" type="number" required />
+        </v-col>
+        
+
         <v-col cols="12" class="d-flex">
-          <v-btn color="primary" type="submit" :loading="loading">Cadastrar</v-btn>
+          <v-btn color="primary" type="submit" :loading="loading">Cadastrar café</v-btn>
           <v-spacer />
           <v-btn text @click="resetar">Limpar</v-btn>
         </v-col>

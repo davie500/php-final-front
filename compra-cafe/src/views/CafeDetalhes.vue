@@ -1,10 +1,3 @@
-<!-- <script>
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { CafeService } from '../Controller/api'
-
-</script> -->
-
 <template>
   <v-container class="pa-6">
     <v-btn to="/" icon class="mb-4">
@@ -18,14 +11,12 @@ import { CafeService } from '../Controller/api'
 
     <div v-else-if="cafe">
       <v-row>
-        <!-- Imagem do Café -->
         <v-col cols="12" md="6">
           <v-card>
             <v-img :src="cafe.image || cafe.imagem || placeholder" height="400px" />
           </v-card>
         </v-col>
 
-        <!-- Detalhes -->
         <v-col cols="12" md="6">
           <h1 class="display-1 mb-4">{{ cafe.name || cafe.nome }}</h1>
 
@@ -44,7 +35,6 @@ import { CafeService } from '../Controller/api'
 
           <v-divider class="my-4"></v-divider>
 
-          <!-- Quantidade e Ações -->
           <v-row class="align-center">
             <v-col cols="auto">
               <label class="text-body2">Quantidade:</label>
@@ -107,7 +97,7 @@ onMounted(async () => {
 
   loading.value = true
   try {
-    const res = await CafeService.obter(parseInt(cafeId))
+    const res = await CafeService.buscar(parseInt(cafeId))
     cafe.value = res.data?.data ?? res.data
   } catch (err) {
     console.error('Erro ao carregar café:', err)
@@ -127,12 +117,10 @@ function formatDate(dateString: string) {
 
 function adicionarAoCarrinho() {
   alert(`Adicionado ${quantidade.value}x "${cafe.value.name || cafe.value.nome}" ao carrinho!`)
-  // TODO: implementar lógica real de carrinho (store/context)
 }
 
 function adicionarAosFavoritos() {
   alert(`"${cafe.value.name || cafe.value.nome}" adicionado aos favoritos!`)
-  // TODO: implementar lógica real de favoritos (backend)
 }
 </script>
 

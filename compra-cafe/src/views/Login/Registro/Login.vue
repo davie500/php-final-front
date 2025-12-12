@@ -20,14 +20,18 @@ async function fazerLogin() {
     const { data } = await UsuarioService.login(email.value, senha.value)
     console.log('Login bem-sucedido:', data)
     
-    if (data.token) {
-      localStorage.setItem('auth_token', data.token)
-    }
+      if (data.token) {
+        console.log('[Auth] Salvando auth_token no localStorage:', data.token)
+        localStorage.setItem('auth_token', data.token)
+        console.log('[Auth] auth_token salvo')
+      }
     
     if (data.user) {
-      localStorage.setItem('usuario', JSON.stringify(data.user))
+        console.log('[Auth] Salvando usuario no localStorage:', data.user)
+        localStorage.setItem('usuario', JSON.stringify(data.user))
         // atualizar store
         setUser(data.user)
+        console.log('[Auth] usuario salvo e store atualizado')
     }
     
     alert('Login realizado com sucesso!')

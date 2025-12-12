@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+  baseURL: 'http://127.0.0.1:8000/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -13,11 +13,35 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+
+  try {
+    const fullUrl = (config.baseURL || '') + (config.url || '')
+    console.log('[API] Request ->', (config.method || 'GET').toUpperCase(), fullUrl)
+  } catch (e) {
+    //
+  }
+
   return config
 }, (error) => {
+  console.error('[API] Request error ->', error?.message || error)
   return Promise.reject(error)
 })
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    try {
+      const reqUrl = error.config ? ((error.config.baseURL || '') + (error.config.url || '')) : 'unknown'
+      console.error('[API] Response error ->', reqUrl, error.message || error)
+    } catch (e) {
+      //
+    }
+
+    return Promise.reject(error)
+  }
+)
+
+// ===== SERVIÇOS DE CAFÉ =====
 export const CafeService = {
   listar: () => api.get('/cafes'),
   buscar: (id: number) => api.get(`/cafes/${id}`),
@@ -29,6 +53,7 @@ export const CafeService = {
 export const UsuarioService = {
   registro: (data: any) => api.post('/registro', data),
   login: (email: string, senha: string) => api.post('/login', { email, senha }),
+  listar: () => api.get('/usuarios'),
   buscar: (id: number) => api.get(`/usuarios/${id}`),
   atualizar: (id: number, data: any) => api.put(`/usuarios/${id}`, data),
   excluir: (id: number) => api.delete(`/usuarios/${id}`),

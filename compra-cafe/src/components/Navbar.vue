@@ -44,7 +44,6 @@
       </v-menu>
     </template>
 
-    <!-- Botões de Login/Cadastro (se não autenticado) -->
     <template v-else>
       <v-btn to="/cadastro" text>Cadastro</v-btn>
       <v-btn to="/login" text>Login</v-btn>
@@ -53,7 +52,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, watch, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { usuario, initAuthFromStorage, clearUser } from '../stores/auth'
 
@@ -61,7 +60,8 @@ const router = useRouter()
 
 // usuário reativo vindo do store
 const usuarioRef = usuario
-const usuarioAutenticado = computed(() => !!localStorage.getItem('auth_token') && !!usuarioRef.value)
+const isAuthenticated = ref(false)
+const usuarioAutenticado = computed(() => isAuthenticated.value)
 
 // Calcula as iniciais do nome
 const iniciais = computed(() => {
@@ -80,6 +80,12 @@ function onAuthChanged() {
 
 onMounted(() => {
   initAuthFromStorage()
+  // inicializa flag de autenticação
+  isAuthenticated.value = !!localStorage.getItem('auth_token') && !!usuarioRef.value
+  // observa mudanças diretas no store
+  watch(usuarioRef, (val) => {
+    isAuthenticated.value = !!localStorage.getItem('auth_token') && !!val
+  })
   window.addEventListener('auth-changed', onAuthChanged)
 })
 

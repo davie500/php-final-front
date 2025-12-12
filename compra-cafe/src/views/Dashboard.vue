@@ -5,11 +5,6 @@
                 <v-col cols="12" md="6">
                     <h1 class="display-1">Bem-vindo à Cafeteria dos Eichelberger</h1>
                     <p class="subtitle-1">Explore nossos cafés especiais e faça seu pedido hoje mesmo.</p>
-                    <v-btn to="/cadastro-cafe" color="primary" class="mt-4" large>Ver Catálogo</v-btn>
-                </v-col>
-
-                <v-col cols="12" md="6">
-                    <v-img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800&auto=format&fit=crop" aspect-ratio="1.6" class="rounded-lg"></v-img>
                 </v-col>
             </v-row>
         </v-sheet>
@@ -50,7 +45,6 @@ import { useRouter } from 'vue-router'
 import { CafeService } from '@/Controller/api'
 
 const router = useRouter()
-
 const cafes = ref<any[]>([])
 const loading = ref(false)
 const placeholder = 'https://via.placeholder.com/400x200?text=Café'
@@ -59,7 +53,7 @@ onMounted(async () => {
     loading.value = true
     try {
         const res = await CafeService.listar()
-        // backend pode retornar data (wrapper) ou um array direto
+        
         cafes.value = res.data?.data ?? res.data ?? []
     } catch (err) {
         console.error('Erro ao carregar cafés:', err)

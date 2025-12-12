@@ -21,27 +21,23 @@ async function cadastrar() {
     const payload = {
       nome: nome.value,
       email: email.value,
-      
-      senha: senha.value,
-      
-      password: senha.value,
-      password_confirmation: senha.value,
-      
-      senha_hash: senha.value,
-      
-      senha_hash_confirmation: senha.value
+      senha: senha.value
     }
 
     const { data } = await UsuarioService.registro(payload)
     console.log('Usuário cadastrado com sucesso:', data)
     
     if (data.token) {
+      console.log('[Auth] Salvando auth_token no localStorage:', data.token)
       localStorage.setItem('auth_token', data.token)
+      console.log('[Auth] auth_token salvo')
     }
     if (data.user) {
+      console.log('[Auth] Salvando usuario no localStorage:', data.user)
       localStorage.setItem('usuario', JSON.stringify(data.user))
-        // atualizar store
-        setUser(data.user)
+      
+      setUser(data.user)
+      console.log('[Auth] usuario salvo e store atualizado')
     }
     
     alert('Cadastro realizado com sucesso!')
@@ -82,7 +78,7 @@ async function cadastrar() {
         <v-col cols="12" class="d-flex">
           <v-btn color="primary" type="submit" :loading="loading">Cadastrar</v-btn>
           <v-spacer />
-          <v-btn text @click="() => { nome = ''; email = ''; senha = ''; }">Limpar</v-btn>
+          <v-btn text @click="() => { nome = ''; email = ''; senha = '' }">Limpar</v-btn>
         </v-col>
       </v-row>
     </v-form>
