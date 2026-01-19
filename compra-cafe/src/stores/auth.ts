@@ -1,6 +1,5 @@
 import { ref } from 'vue'
 
-// Store mínimo para estado de autenticação (frontend)
 export const usuario = ref<any | null>(null)
 
 export function setUser(u: any | null) {

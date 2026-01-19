@@ -41,15 +41,14 @@ api.interceptors.response.use(
   }
 )
 
-// ===== SERVIÇOS DE CAFÉ =====
 export const CafeService = {
   listar: () => api.get('/cafes'),
   buscar: (id: number) => api.get(`/cafes/${id}`),
   criar: (data: any) => api.post('/cafes', data),
-  excluir: (id: number) => api.delete(`/cafes/${id}`)
+  excluir: (id: number) => api.delete(`/cafes/${id}`),
+  comprar: (id: number) => api.post(`/cafes/${id}/comprar`)
 }
 
-// ===== SERVIÇOS DE USUÁRIO =====
 export const UsuarioService = {
   registro: (data: any) => api.post('/registro', data),
   login: (email: string, senha: string) => api.post('/login', { email, senha }),
@@ -57,15 +56,17 @@ export const UsuarioService = {
   buscar: (id: number) => api.get(`/usuarios/${id}`),
   atualizar: (id: number, data: any) => api.put(`/usuarios/${id}`, data),
   excluir: (id: number) => api.delete(`/usuarios/${id}`),
-
 }
 
-// ===== SERVIÇOS DE PEDIDOS =====
 export const PedidoService = {
   listar: () => api.get('/pedidos'),
   obter: (id: number) => api.get(`/pedidos/${id}`),
   criar: (data: any) => api.post('/pedidos', data),
   atualizar: (id: number, data: any) => api.put(`/pedidos/${id}`, data)
+}
+
+export const FilaService = {
+  listar: () => api.get('/fila'),
 }
 
 export default api;

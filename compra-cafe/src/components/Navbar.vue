@@ -3,11 +3,10 @@
     <v-toolbar-title>Café dos Eichelberger</v-toolbar-title>
     <v-spacer />
     <v-btn to="/" text>Dashboard</v-btn>
-    <v-btn to="/cadastro-cafe" text>Cadastro de Cafés</v-btn>
     <v-btn to="/admin" text>Painel Admin</v-btn>
 
     <!-- Mostrar Menu de Usuário (se autenticado) ou Botões de Cadastro/Login (se não) -->
-    <template v-if="usuarioAutenticado && usuario">
+    <template v-if="usuarioAutenticado && usuarioRef.value">
       <v-menu>
         <template #activator="{ props }">
           <v-btn icon v-bind="props" text>
@@ -18,21 +17,8 @@
         </template>
         <v-list>
           <v-list-item>
-            <v-list-item-title class="font-weight-bold">{{ usuario.nome }}</v-list-item-title>
-            <v-list-item-subtitle>{{ usuario.email }}</v-list-item-subtitle>
-          </v-list-item>
-          <v-divider class="my-2"></v-divider>
-          <v-list-item>
-            <template #prepend>
-              <v-icon>mdi-account</v-icon>
-            </template>
-            <v-list-item-title>Meu Perfil</v-list-item-title>
-          </v-list-item>
-          <v-list-item>
-            <template #prepend>
-              <v-icon>mdi-history</v-icon>
-            </template>
-            <v-list-item-title>Meus Pedidos</v-list-item-title>
+            <v-list-item-title class="font-weight-bold">{{ usuarioRef.value.nome }}</v-list-item-title>
+            <v-list-item-subtitle>{{ usuarioRef.value.email }}</v-list-item-subtitle>
           </v-list-item>
           <v-divider class="my-2"></v-divider>
           <v-list-item @click="logout">
@@ -58,13 +44,10 @@ import { useRouter } from 'vue-router'
 import { usuario, initAuthFromStorage, clearUser } from '../stores/auth'
 
 const router = useRouter()
-
-// usuário reativo vindo do store
 const usuarioRef = usuario
 const isAuthenticated = ref(false)
 const usuarioAutenticado = computed(() => isAuthenticated.value)
 
-// Calcula as iniciais do nome
 const iniciais = computed(() => {
   if (!usuarioRef.value?.nome) return 'U'
   return usuarioRef.value.nome
@@ -77,13 +60,12 @@ const iniciais = computed(() => {
 
 function onAuthChanged() {
   initAuthFromStorage()
+  isAuthenticated.value = !!localStorage.getItem('auth_token') && !!usuarioRef.value
 }
 
 onMounted(() => {
   initAuthFromStorage()
-  // inicializa flag de autenticação
   isAuthenticated.value = !!localStorage.getItem('auth_token') && !!usuarioRef.value
-  // observa mudanças diretas no store
   watch(usuarioRef, (val) => {
     isAuthenticated.value = !!localStorage.getItem('auth_token') && !!val
   })
@@ -94,12 +76,10 @@ onUnmounted(() => {
   window.removeEventListener('auth-changed', onAuthChanged)
 })
 
-// Função de logout
 function logout() {
   localStorage.removeItem('auth_token')
   localStorage.removeItem('usuario')
   clearUser()
-  // notifica a aplicação que o estado auth mudou
   window.dispatchEvent(new Event('auth-changed'))
   router.push('/login')
 }

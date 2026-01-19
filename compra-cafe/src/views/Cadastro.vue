@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { UsuarioService } from '../../../Controller/api'
-import { setUser } from '../../../stores/auth'
+import { UsuarioService } from '../Controller/api'
+import { setUser } from '../stores/auth'
 
 const nome = ref('')
 const email = ref('')
@@ -21,7 +21,7 @@ async function cadastrar() {
     const payload = {
       nome: nome.value,
       email: email.value,
-      senha: senha.value
+      senha_hash: senha.value
     }
 
     const { data } = await UsuarioService.registro(payload)

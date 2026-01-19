@@ -16,7 +16,6 @@ const vuetify = createVuetify({
         defaultTheme: 'light'
     }
 })
-// Em desenvolvimento, limpar chaves indesejadas que podem vir de testes antigos
 if (import.meta.env.DEV) {
     try {
         const keysToRemove = ['carrinho', 'resumo', 'pagamento']

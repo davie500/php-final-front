@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { UsuarioService } from '../../../Controller/api'
-import { setUser } from '../../../stores/auth'
+import { UsuarioService } from '../Controller/api'
+import { setUser } from '../stores/auth'
 
 const router = useRouter()
 const email = ref('')
@@ -18,24 +18,16 @@ async function fazerLogin() {
   loading.value = true
   try {
     const { data } = await UsuarioService.login(email.value, senha.value)
-    console.log('Login bem-sucedido:', data)
-    
-      if (data.token) {
-        console.log('[Auth] Salvando auth_token no localStorage:', data.token)
-        localStorage.setItem('auth_token', data.token)
-        console.log('[Auth] auth_token salvo')
-      }
-    
-    if (data.user) {
-        console.log('[Auth] Salvando usuario no localStorage:', data.user)
-        localStorage.setItem('usuario', JSON.stringify(data.user))
-        // atualizar store
-        setUser(data.user)
-        console.log('[Auth] usuario salvo e store atualizado')
+    const user = data.data?.user
+    const token = data.data?.token
+    if (token) {
+      localStorage.setItem('auth_token', token)
     }
-    
+    if (user) {
+      localStorage.setItem('usuario', JSON.stringify(user))
+      setUser(user)
+    }
     alert('Login realizado com sucesso!')
-    
     window.dispatchEvent(new Event('auth-changed'))
     router.push('/')
   } catch (error: any) {

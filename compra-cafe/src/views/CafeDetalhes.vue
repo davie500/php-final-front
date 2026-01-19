@@ -1,131 +1,85 @@
 <template>
-  <v-container class="pa-6">
-    <v-btn to="/" icon class="mb-4">
-      <v-icon>mdi-arrow-left</v-icon>
-    </v-btn>
-
-    <div v-if="loading" class="text-center pa-8">
-      <v-progress-circular indeterminate color="primary" />
-      <p class="mt-4">Carregando café...</p>
+  <div class="cafe-detalhes-container">
+    <div v-if="loading" class="loading">Carregando...</div>
+    <div v-else-if="cafe" class="cafe-detalhes-card">
+      <h1 class="cafe-nome">{{ cafe.nome }}</h1>
+      <p class="cafe-marca">Marca: {{ cafe.marca }}</p>
+      <p class="cafe-preco">Preço: <strong>R$ {{ cafe.preco }}</strong></p>
+      <p v-if="cafe.descricao" class="cafe-desc">Descrição: {{ cafe.descricao }}</p>
+      <button class="btn-voltar" @click="voltar">Voltar</button>
     </div>
-
-    <div v-else-if="cafe">
-      <v-row>
-        <v-col cols="12" md="6">
-          <v-card>
-            <v-img :src="cafe.image || cafe.imagem || placeholder" height="400px" />
-          </v-card>
-        </v-col>
-
-        <v-col cols="12" md="6">
-          <h1 class="display-1 mb-4">{{ cafe.name || cafe.nome }}</h1>
-
-          <p class="text-h6 mb-2">Descrição</p>
-          <p class="text-body1 mb-6">{{ cafe.desc || cafe.descricao || cafe.description }}</p>
-
-          <v-divider class="my-4"></v-divider>
-
-          <p class="text-h5 font-weight-bold mb-4">
-            R$ {{ formatPrice(cafe.price || cafe.preco) }}
-          </p>
-
-          <p v-if="cafe.created_at" class="text-caption text-grey">
-            Adicionado em: {{ formatDate(cafe.created_at) }}
-          </p>
-
-          <v-divider class="my-4"></v-divider>
-
-          <v-row class="align-center">
-            <v-col cols="auto">
-              <label class="text-body2">Quantidade:</label>
-            </v-col>
-            <v-col cols="auto">
-              <v-btn-group>
-                <v-btn icon size="small" @click="quantidade = Math.max(1, quantidade - 1)">
-                  <v-icon>mdi-minus</v-icon>
-                </v-btn>
-                <v-btn flat>{{ quantidade }}</v-btn>
-                <v-btn icon size="small" @click="quantidade++">
-                  <v-icon>mdi-plus</v-icon>
-                </v-btn>
-              </v-btn-group>
-            </v-col>
-          </v-row>
-
-          <v-row class="mt-6">
-            <v-col>
-              <v-btn color="primary" size="large" block @click="adicionarAoCarrinho">
-                <v-icon start>mdi-shopping-cart</v-icon>
-                Adicionar ao Carrinho
-              </v-btn>
-            </v-col>
-          </v-row>
-
-          <v-row class="mt-2">
-            <v-col>
-              <v-btn variant="outlined" color="primary" size="large" block @click="adicionarAosFavoritos">
-                <v-icon start>mdi-heart-outline</v-icon>
-                Adicionar aos Favoritos
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-    </div>
-
-    <div v-else class="text-center pa-8">
-      <p class="text-h6">Café não encontrado.</p>
-      <v-btn to="/" class="mt-4">Voltar ao Dashboard</v-btn>
-    </div>
-  </v-container>
+    <div v-else class="empty-state">Café não encontrado.</div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { CafeService } from '../Controller/api'
 
 const route = useRoute()
+const router = useRouter()
 const cafe = ref<any>(null)
-const loading = ref(false)
-const quantidade = ref(1)
-const placeholder = 'https://via.placeholder.com/400x400?text=Café'
+const loading = ref(true)
 
 onMounted(async () => {
-  const cafeId = route.params.id as string
-  if (!cafeId) return
-
-  loading.value = true
+  const id = route.params.id
   try {
-    const res = await CafeService.buscar(parseInt(cafeId))
-    cafe.value = res.data?.data ?? res.data
-  } catch (err) {
-    console.error('Erro ao carregar café:', err)
+    const res = await CafeService.buscar(Number(id))
+    cafe.value = res.data.data
+  } catch (e) {
     cafe.value = null
   } finally {
     loading.value = false
   }
 })
 
-function formatPrice(price: number) {
-  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(price)
-}
-
-function formatDate(dateString: string) {
-  return new Intl.DateTimeFormat('pt-BR').format(new Date(dateString))
-}
-
-function adicionarAoCarrinho() {
-  alert(`Adicionado ${quantidade.value}x "${cafe.value.name || cafe.value.nome}" ao carrinho!`)
-}
-
-function adicionarAosFavoritos() {
-  alert(`"${cafe.value.name || cafe.value.nome}" adicionado aos favoritos!`)
+function voltar() {
+  router.push('/')
 }
 </script>
 
 <style scoped>
-.v-card {
-  border-radius: 8px;
+.cafe-detalhes-container {
+  max-width: 480px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  padding: 2rem;
+  text-align: center;
+}
+.cafe-nome {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.cafe-marca, .cafe-preco, .cafe-desc {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+.btn-voltar {
+  background: #764ba2;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1.5rem;
+}
+.btn-voltar:hover {
+  background: #8b5cf6;
+}
+.loading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #764ba2;
+}
+.empty-state {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 1.1rem;
+  margin-top: 2rem;
 }
 </style>
